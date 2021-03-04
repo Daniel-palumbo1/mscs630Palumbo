@@ -1,13 +1,13 @@
 package main;
 
+import java.io.File;
 import java.util.Scanner;
-import java.io.*;
 
 public class Driver_lab1{
 
     static final int CORRECTION_FACTOR = 10;
     static final int SPACE_NUM = 26;
-    static final String FILE_NAME = "src/test/in/input1";
+    static final String FILE_NAME = "src/test/in/input.10.in";
     
     public static int[] str2int(String plainText){
         int[] output = new int[plainText.length()];

@@ -1,6 +1,28 @@
+/**
+ * file: Driver_lab2a.java
+ * author: Daniel Palumbo
+ * course: MSCS_630_711_21S
+ * assignment: lab 2b
+ * due date: 15 March, 2021
+ *
+ * This program calculates x,y, and d for given equation ax + by = gcd(a,b) = d
+ *
+ */
 package main;
 public class Driver_lab2b {
 
+
+    /**
+     * euclidAlgExt
+     *
+     * This method takes 2 long params and calculates the gcd,x and y using the extended euclidean algorithm.
+     * Originally I wrote this so that I found one coefficient and then solved for the other but had to change
+     * due to the long number operations.
+     *
+     * @param a long
+     * @param b long
+     * @return coeff[] long which is the remainder from n-1 iterations.
+     */
     public static long[] euclidAlgExt(long a, long b){
         boolean switched = false;
         if(b > a ){

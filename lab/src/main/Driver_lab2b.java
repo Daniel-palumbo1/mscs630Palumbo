@@ -1,36 +1,45 @@
 package main;
 public class Driver_lab2b {
 
-    static long[] euclidAlg(long a, long b){
+    public static long[] euclidAlgExt(long a, long b){
         boolean switched = false;
-        if(b > a){
+        if(b > a ){
             long temp = a;
             a = b;
             b = temp;
             switched = true;
         }
+        else if(a == b){
+            switched = true;
+        }
         long divisor = a;
         long dividend = b;
-        long c0 = 0;
-        long c1 = 1;
+        long ax0 = 0;
+        long ax1 = 1;
+        long bx0 = 1;
+        long bx1 = 0;
+
         long[] coeff = new long[3];
         while(dividend % divisor != 0){
-            long btwn = c1;
-            long q = (long) Math.floor(dividend/divisor);
-            c1 = c0 - (q*btwn);
-            c0 = btwn;
+            long btwnA = ax1;
+            long btwnB = bx1;
+            long q = Math.floorDiv(dividend,divisor);
+            ax1 = ax0 - (q*btwnA);
+            ax0 = btwnA;
+            bx1 = bx0 - (q*btwnB);
+            bx0 = btwnB;
 
             long remainder = dividend % divisor;
             dividend = divisor;
             divisor = remainder;
         }
-        coeff[0] = c1;
-        coeff[1] = (divisor-(a*c1))/b;
-        coeff[2] = divisor;
+        coeff[1] = ax1;
+        coeff[2] = bx1;
+        coeff[0] = divisor;
 
         if(switched){
-            long revMap = coeff[0];
-            coeff[0] = coeff[1];
+            long revMap = coeff[2];
+            coeff[2] = coeff[1];
             coeff[1] = revMap;
         }
         return coeff;
@@ -38,7 +47,7 @@ public class Driver_lab2b {
 
 
     public static void main(String[] arg){
-        long[] test = euclidAlg(1398,324);
+        long[] test = euclidAlgExt(1398,324);
         for(long a: test){
             System.out.println(a);
         }

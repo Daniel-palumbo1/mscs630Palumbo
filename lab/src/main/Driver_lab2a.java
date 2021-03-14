@@ -3,7 +3,7 @@ package main;
 public class Driver_lab2a {
 
 
-    static long euclidAlg(long a, long b){
+    public static long euclidAlg(long a, long b){
         if(b > a){
             long temp = b;
             b = a;
@@ -22,7 +22,7 @@ public class Driver_lab2a {
 
 
     public static void main(String[] arg){
-        System.out.println(euclidAlg(24,24));
+        System.out.println(euclidAlg(461135877,24));
 
     }
 }

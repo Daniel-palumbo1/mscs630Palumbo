@@ -4,6 +4,7 @@
  * course: MSCS_630_711_21S
  * assignment: lab 3a
  * due date: 15 March, 2021
+ * version: final
  *
  * This program calculates the determinant of an n x n matrix in mod m
  *

@@ -1,9 +1,11 @@
 /**
+ *
  * file: Driver_lab2a.java
  * author: Daniel Palumbo
  * course: MSCS_630_711_21S
  * assignment: lab 3b
  * due date: 15 March, 2021
+ * version: final
  *
  * This program calculates takes an input file and stores an identifier that is saved and a string that is also saved.
  * it then converts every 16 characters of the string to a 4 x 4 Ascii matrix and then returns it. If the string it

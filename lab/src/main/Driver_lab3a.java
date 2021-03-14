@@ -21,7 +21,7 @@ public class Driver_lab3a {
     static int dim;
 
     /**
-     * euclidAlgExt
+     * cofModDet
      *
      * This method takes an n x n matrix and an integer denoting modulus. It then finds the determinant mod m
      * using 3 different cases. Case1 is 1 x 1 matrix, case2 is 2 x 2 matrix, and case 3 is n x n in which the

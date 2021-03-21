@@ -1,5 +1,17 @@
+/**
+ *
+ * file: AESCipher.java
+ * author: Daniel Palumbo
+ * course: MSCS_630_711_21S
+ * assignment: lab 4
+ * due date: 22 March, 2021
+ * version: final
+ *
+ * This file implements the AES algorithm on a 32 bit string using aesRoundKeys. It also has several helper methods
+ * to implement the AES algorithm.
+ *
+ */
 package main;
-
 import java.security.Key;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -9,6 +21,7 @@ import java.util.stream.IntStream;
 
 public class AESCipher {
 
+    //SBox implementation
     private static int[] sBox = new int[] {
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
             0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -27,7 +40,7 @@ public class AESCipher {
             0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
             0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
     };
-
+    //RCon implementation
     private static final int[] rCon = {
             0x8D,0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1B,0x36,0x6C,0xD8,0xAB,0x4D,0x9A,
             0x2F,0x5E,0xBC,0x63,0xC6,0x97,0x35,0x6A,0xD4,0xB3,0x7D,0xFA,0xEF,0xC5,0x91,0x39,
@@ -47,46 +60,61 @@ public class AESCipher {
             0x61,0xC2,0x9F,0x25,0x4A,0x94,0x33,0x66,0xCC,0x83,0x1D,0x3A,0x74,0xE8,0xCB,0x8D};
 
 
-
-    public static String[][] aesRoundKeys(String KeyHex){
+    /**
+     * aesRoundKeys
+     *
+     * This method takes in a 32 bit string and returns an array of Strings that represent each round of encryption
+     * by following the AES algorithm.
+     *
+     * @param KeyHex String 32 bit string
+     * @return String[] an array of strings pertaining of each round of encryption.
+     */
+    public static String[] aesRoundKeys(String KeyHex){
+        //Section1: adding each Hex code to first the initial 4x4 matrix and then to W the 4x44 matrix.
         String[] output = new String[11];
-
         Queue<String> queue = new LinkedList<>();
+
         for(int index = 0; index < KeyHex.length(); index+=2){
             queue.add(KeyHex.substring(index,index+2));
         }
+
         String[][] Ke = new String[4][4];
         for(int i = 0; i < Ke.length; i++){
             for(int j = 0; j < Ke[0].length; j++){
                 Ke[j][i] = queue.remove();
             }
         }
+
         String[][] W = new String[4][44];
         for(int i = 0; i < Ke.length; i++){
             for(int j = 0; j < Ke[0].length; j++){
                 W[j][i] = Ke[j][i];
             }
         }
+
+        /*Section2: If the column number is divisible by 4, we shift the temp array
+         *then take the SBox value of each entry in the temp array. We then XOR index 0 against the Rcon round and then
+         *XOR each entry against the entries in the column-4.
+         */
         for(int col = 4; col < W[0].length; col++){
             String[] tempW = {W[0][col-1], W[1][col-1], W[2][col-1], W[3][col-1]};
-            for(String[] x: W){
-                for(String i: x){
-                    System.out.print(i + " ");
-                }
-                System.out.println();
-            }
-            System.out.println();
             if(col % 4 == 0){
                 tempW = shiftUp(tempW);
+
                 for(int x = 0; x < tempW.length; x++){
                     tempW[x] = Integer.toHexString(aesSBox(tempW[x]));
                 }
+
                 tempW[0] = XOR(aesRcon(getRound(col)),tempW[0]).toUpperCase();
+
                 for(int x = 0; x < tempW.length; x++){
                     tempW[x] = XOR(W[x][col-4],tempW[x]);
                     W[x][col] = tempW[x].length() == 2 ? tempW[x].toUpperCase() : "0" + tempW[x].toUpperCase();
                 }
             }
+            /*Section3: If the column number is not divisible by 4, we just XOR each entry against the entries in the
+             *column-4.
+             */
             else{
                 for(int x = 0; x < tempW.length; x++){
                     tempW[x] = XOR(W[x][col-4],tempW[x]);
@@ -94,46 +122,83 @@ public class AESCipher {
                 }
             }
         }
-        return W;
+        //Section 4: I use a StringBuffer to iterate through W and create 11 strings to then load into the output array
+        int strIndex = 0;
+        int colNum = 1;
+        StringBuffer ans = new StringBuffer();
+
+        for(int col = 0; col < W[0].length; col++, colNum++){
+            for(int row = 0; row < W.length; row++){
+                ans.append(W[row][col]);
+            }
+            if(colNum % 4 == 0){
+                output[strIndex] = ans.toString();
+                strIndex++;
+                ans.delete(0,ans.length());
+            }
+        }
+        return output;
     }
 
+    /**
+     *shiftUp
+     *
+     * This method takes a String array and shifts the [0] to the last index.
+     *
+     * @param str a String[] of size 4.
+     * @return shifted String[] the shifted string.
+     */
     public static String[] shiftUp(String[] str){
         String[] shifted = {str[1],str[2],str[3],str[0]};
         return shifted;
     }
 
+    /**
+     *aesSBox
+     *
+     * This method returns the SBox hex val corresponding to the hex val provided.
+     *
+     * @param inHex a String of a hex val.
+     * @return sBox transformed hex val.
+     */
     public static int aesSBox(String inHex){
         return sBox[Integer.parseInt(inHex,16)];
     }
 
+    /**
+     *aesRcon
+     *
+     * This method returns the rCon hex val corresponding to the round provided.
+     *
+     * @param round a String of a hex val.
+     * @return rCon transformed hex val.
+     */
     public static String aesRcon(int round){
         return Integer.toHexString(rCon[round]);
     }
 
+    /**
+     *getRound
+     *
+     * This method returns the round provided the column number.
+     *
+     * @param column int representing the column of the matrix W.
+     * @return column number/4 representing the round of encryption.
+     */
     public static int getRound(int column){
         return (int) Math.floor(column/4);
     }
 
-    public static String XOR(String first, String second){
-        return Integer.toHexString(Integer.parseInt(first,16) ^ Integer.parseInt(second,16));
-    }
-
-    public static void main(String[] arg){
-        String[][] r = aesRoundKeys("5468617473206D79204B756E67204675");
-        String ans = "5468617473206D79204B756E67204675E232FCF191129188B159E4E6D679A29356082007C71AB18F76435569A03AF7FAD2600DE7157ABC686339E901C3031EFBA11202C9B468BEA1D75157A01452495BB1293B3305418592D210D232C6429B69BD3DC287B87C47156A6C9527AC2E0E4ECC96ED1674EAAA031E863F24B2A8316A8E51EF21FABB4522E43D7A0656954B6CBFE2BF904559FAB2A16480B4F7F1CBD828FDDEF86DA4244ACCC0A4FE3B316F26";
-        String sol = "";
-        for(int l = 0;l < r[0].length; l++){
-            for(int i = 0; i < r.length; i++){
-                sol += r[i][l];
-            }
-        }
-
-//        System.out.println(Integer.toHexString(sBox[0x20]));
-//        System.out.println(Integer.toHexString(rCon[01]));
-//        System.out.println(Integer.toHexString(0x01 ^ 0xB7));
-//        System.out.println(Integer.toHexString(0x54^0xB6));
-//        System.out.println(ans.contentEquals(sol));
-//        System.out.println(ans);
-//        System.out.println(sol);
+    /**
+     *XOR
+     *
+     * This method takes 2 strings representing hex values and returns the XOR bit manipulation of left by right.
+     *
+     * @param left String of a hex val.
+     * @param right String of a hex val.
+     * @return left as int ^ right as int
+     */
+    public static String XOR(String left, String right){
+        return Integer.toHexString(Integer.parseInt(left,16) ^ Integer.parseInt(right,16));
     }
 }

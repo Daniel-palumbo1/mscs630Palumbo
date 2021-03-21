@@ -66,7 +66,7 @@ public class Driver_lab3b {
         return hexMat;
     }
 
-    //Main method is a little convoluded but I didn't realize the test files take care of this and I wouldn't need this.
+    //Main method is a little convoluted but I didn't realize the test files take care of this and I wouldn't need this.
     public static void main(String[] arg){
         try {
             File file = new File(path);

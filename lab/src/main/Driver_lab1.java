@@ -17,8 +17,8 @@ public class Driver_lab1{
 
     static final int CORRECTION_FACTOR = 10; //adjustment value for getNumericValue a = 10
     static final int SPACE_NUM = 26;
-    static final String FILE_NAME = "src/test/in/input.10.in";
-
+    static final String FILE_NAME = "src/test/lab1/in/test";
+    static char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     /**
      * str2int
      *
@@ -54,6 +54,17 @@ public class Driver_lab1{
 
             while(in.hasNextLine()){
                 int[] out = str2int(in.nextLine());
+
+                for(int i = 0; i < 25; i++){
+                    for(int n = 0; n < out.length; n++){
+                        if(out[n] - i < 0){
+                            System.out.print(alphabet[(out[n] - i + 26) % 25 ] + " ");
+                        }
+                        else
+                            System.out.print(alphabet[(out[n] - i) % 25]  + " ");
+                    }
+                    System.out.println();
+                }
 
                 for(int n: out)
                     System.out.print(n + " ");

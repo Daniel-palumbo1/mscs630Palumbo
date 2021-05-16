@@ -2,6 +2,8 @@ public class Driver {
 
     public static void main(String[] arg){
         PngHelper img = new PngHelper("C:\\Users\\Danie\\Desktop\\CSMS\\Security Algorithms\\repo\\proj\\src\\images\\Beaver (82).png", "BECE93DD29721D8627D7611886510F69");
+        img.getEncryption();
+        img.getDecryption();
 //        System.out.println(Arrays.toString(img.arr));
 //        String[] hex = PngHelper.byteToHex(img.arr);
 //        System.out.println(Arrays.toString(hex));

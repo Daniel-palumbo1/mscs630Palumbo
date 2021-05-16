@@ -2,11 +2,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Arrays;
 
 public class PngHelper {
     public BufferedImage img;
     public ByteArrayOutputStream stream;
     public String[] arr;
+    public AES aes;
+    public String pngHeader = "89504E470D0A1A0A";
 
 
     PngHelper(String path, String key) {
@@ -20,11 +23,22 @@ public class PngHelper {
             this.stream = stream;
 
             AES aes = new AES(key, byteToHex(hex));
+            this.aes = aes;
 
 
         }catch(Exception e){
             System.out.println(e);
         }
+    }
+
+    public String getEncryption(){
+        String hexString = aes.encrypt();
+        return hexString;
+    }
+
+    public String getDecryption(){
+        aes.decrypt();
+        return null;
     }
 
     //converts a byte array to an array of hex Strings
@@ -56,6 +70,21 @@ public class PngHelper {
     public static String hexAsByte(byte bytes){
         String out = Integer.toHexString(bytes & 0xFF);
         return out.length() == 1 ? "0" + out.toUpperCase() : out.toUpperCase();
+    }
+
+    public static String[] hexArray(String str){
+        String[] out = new String[str.length()/2];
+        System.out.println(str.length());
+        int arrIndex = 0;
+        for(int i = 0; i < str.length()-2; i+=2){
+            String val = "" +  str.charAt(i) + str.charAt(i+1);
+            out[arrIndex] = val;
+            arrIndex++;
+        }
+        out[arrIndex] = "" + str.charAt(str.length()-2) + str.charAt(str.length()-1);
+        System.out.println(out.length);
+        System.out.println(Arrays.toString(out));
+        return out;
     }
 
 

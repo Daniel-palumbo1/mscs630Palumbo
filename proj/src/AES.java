@@ -19,10 +19,10 @@ public class AES {
     };
 
     private static String[][] GF256Inv =
-            {{"14","11","13","9"},
-            {"9","14","11","13"},
-            {"13","9","14","11"},
-            {"11","13","9","14"}
+            {{"14","11","13","09"},
+            {"09","14","11","13"},
+            {"13","09","14","11"},
+            {"11","13","09","14"}
     };
 
     //Sbox implementation
@@ -226,8 +226,10 @@ public class AES {
         this.cipherText = out;
         return out;
     }
-
+    //toDo work on this for final decryption and XORing the last cipherText
     public String decrypt(){
+        String[] decrypted = new String[dataArray.length];
+
         String in = this.cipherText.substring(cipherText.length()-32);
         AESDecryption(in);
         return null;
@@ -245,7 +247,6 @@ public class AES {
             outStateHex = AESMixColumn(outStateHex);
             outStateHex = AESStateXOR(stringify(outStateHex),roundKeysHex[i+1]);
         }
-        System.out.println(stringify(outStateHex));
         outStateHex = AESNibbleSub(outStateHex);
         outStateHex = AESShiftRow(outStateHex);
         outStateHex = AESStateXOR(stringify(outStateHex),roundKeysHex[10]);
@@ -257,15 +258,15 @@ public class AES {
         String[][] outStateHex = AESStateXOR(cTextHex,roundKeysHex[10]);
         outStateHex = AESShiftRow(AESShiftRow(AESShiftRow(outStateHex)));
         outStateHex = AESNibbleSubInv(outStateHex);
-        System.out.println("Outstate matches before the for loop for decryption: " + stringify(outStateHex));
-        System.out.println("This is my attempt at inverse of mix columns. Need to look more at this");
-        System.out.println(stringify(AESMixColumn(outStateHex)));
-        System.out.println(stringify(AESMixColumnInv(AESMixColumn(outStateHex))));
-
 
         for(int i = 9; i > 0; i--){
-            outStateHex = AESStateXOR(stringify(outStateHex),roundKeysHex[i-1]);
+            outStateHex = AESStateXOR(stringify(outStateHex),roundKeysHex[i]);
+            outStateHex = AESMixColumnInv(outStateHex);
+            outStateHex = AESShiftRow(AESShiftRow(AESShiftRow(outStateHex)));
+            outStateHex = AESNibbleSubInv(outStateHex);
         }
+
+        outStateHex = AESStateXOR(stringify(outStateHex),roundKeysHex[0]);
 
 
         return null;
@@ -417,7 +418,7 @@ public class AES {
             for(int j = 0; j < inStateHex.length; j++){
                 int num = 0;
                 for(int x = 0; x < inStateHex.length; x++){
-                    num ^= evaluateGF(GF256Inv[i][x],inStateHex[x][j]);
+                    num ^= evaluateGFInv(GF256Inv[i][x],inStateHex[x][j]);
                 }
                 output[i][j] = Integer.toHexString(num);
             }
@@ -486,7 +487,7 @@ public class AES {
     }
 
     public static int evaluateGFInv(String gf, String hex){
-        if(gf.equals("9"))
+        if(gf.equals("09"))
             return MULT_NINE[Integer.parseInt(hex,16)];
         else if(gf.equals("11"))
             return MULT_ELEVEN[Integer.parseInt(hex,16)];
@@ -603,6 +604,15 @@ public class AES {
 
     public static String getKey(){
         return key;
+    }
+
+    public static void arrayPrint(String[][] arr){
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < arr.length; j++){
+                System.out.print(arr[i][j].toUpperCase() + " ");
+            }
+            System.out.println();
+        }
     }
 
 

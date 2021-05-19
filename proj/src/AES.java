@@ -226,13 +226,25 @@ public class AES {
         this.cipherText = out;
         return out;
     }
-    //toDo work on this for final decryption and XORing the last cipherText
+    
     public String decrypt(){
-        String[] decrypted = new String[dataArray.length];
+        String[] decrypted = new String[this.dataArray.length];
+        String[] dataArray = new String[this.dataArray.length];
+        int index = 0;
+        for(int i = 0; i < dataArray.length; i++){
+            dataArray[i] = this.cipherText.substring(index,index+32);
+            index += 32;
+        }
 
-        String in = this.cipherText.substring(cipherText.length()-32);
-        AESDecryption(in);
-        return null;
+        for(int i = dataArray.length-1;i >= 0; i--){
+            if(i > 0) {
+                decrypted[i] = IVxor(dataArray[i - 1], AESDecryption(dataArray[i]));
+            }
+            else{
+                decrypted[i] = IVxor(getIV(), AESDecryption(dataArray[i]));
+            }
+        }
+        return arrayToString(decrypted).substring(0,cipherText.length()-padding);
     }
 
     public static String AESEncryption(String pTextHex){
@@ -269,7 +281,7 @@ public class AES {
         outStateHex = AESStateXOR(stringify(outStateHex),roundKeysHex[0]);
 
 
-        return null;
+        return stringify(outStateHex);
 
     }
 
@@ -614,6 +626,5 @@ public class AES {
             System.out.println();
         }
     }
-
 
 }

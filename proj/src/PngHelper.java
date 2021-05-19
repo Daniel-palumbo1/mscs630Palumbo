@@ -9,7 +9,6 @@ public class PngHelper {
     public ByteArrayOutputStream stream;
     public String[] arr;
     public AES aes;
-    public String pngHeader = "89504E470D0A1A0A";
 
 
     PngHelper(String path, String key) {
@@ -37,8 +36,8 @@ public class PngHelper {
     }
 
     public String getDecryption(){
-        aes.decrypt();
-        return null;
+        String hexString = aes.decrypt();
+        return hexString;
     }
 
     //converts a byte array to an array of hex Strings

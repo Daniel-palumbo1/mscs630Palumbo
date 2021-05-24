@@ -201,18 +201,18 @@ public class AES {
 
 
 
-
     public AES(String key,String[] arr){
-       generateIV(key.length());
-       setKey(key);
-       String data = stringMaker(arr);
-       String[] dataArray = new String[data.length()/32];
-       int index = 0;
-       for(int i = 0; i < dataArray.length; i++){
-           dataArray[i] = data.substring(index,index+32);
-           index += 32;
-       }
-       this.dataArray = dataArray;
+        System.out.println(stringMaker(arr));
+        generateIV(key.length());
+        setKey(key);
+        String data = stringMaker(arr);
+        String[] dataArray = new String[data.length()/32];
+        int index = 0;
+        for(int i = 0; i < dataArray.length; i++){
+            dataArray[i] = data.substring(index,index+32);
+            index += 32;
+        }
+        this.dataArray = dataArray;
     }
 
     public String encrypt(){
@@ -226,7 +226,7 @@ public class AES {
         this.cipherText = out;
         return out;
     }
-    
+
     public String decrypt(){
         String[] decrypted = new String[this.dataArray.length];
         String[] dataArray = new String[this.dataArray.length];
@@ -247,7 +247,7 @@ public class AES {
         return arrayToString(decrypted).substring(0,cipherText.length()-padding);
     }
 
-    public static String AESEncryption(String pTextHex){
+    private static String AESEncryption(String pTextHex){
 
         //adding round keys from keyHex
         String[] roundKeysHex = aesRoundKeys(getKey());
@@ -265,7 +265,7 @@ public class AES {
         return stringify(outStateHex);
     }
 
-    public String AESDecryption(String cTextHex){
+    private String AESDecryption(String cTextHex){
         String[] roundKeysHex = aesRoundKeys(getKey());
         String[][] outStateHex = AESStateXOR(cTextHex,roundKeysHex[10]);
         outStateHex = AESShiftRow(AESShiftRow(AESShiftRow(outStateHex)));
@@ -402,8 +402,6 @@ public class AES {
         }
         return output;
     }
-
-
 
     public static String[] shiftUp(String[] str){
         String[] shifted = {str[1],str[2],str[3],str[0]};
